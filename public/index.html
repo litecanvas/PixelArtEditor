@@ -12,27 +12,35 @@
         padding: 1rem;
         font-family: sans-serif;
       }
+
       h1 {
         font-size: 1.5rem;
+        display: inline-block;
+        margin: 0;
       }
+
       #palette label span {
         width: 32px;
         height: 32px;
         display: block;
       }
+
       #palette label {
         display: block;
         padding: 4px;
         border: 4px solid #ddd;
       }
+
       #palette label.selected {
         border: 4px solid #349109;
       }
+
       #palette {
         display: flex;
         flex-wrap: wrap;
         gap: 10px;
       }
+
       #art {
         background-image: repeating-conic-gradient(
           #fefefe 0% 25%,
@@ -43,6 +51,7 @@
         margin-top: 2rem;
         margin-bottom: 0.5rem;
       }
+
       textarea {
         margin-top: 2rem;
         margin-bottom: 0.5rem;
@@ -50,6 +59,7 @@
         width: 100%;
         max-width: 480px;
       }
+
       button {
         padding: 0.5em 1em;
         margin-right: 0.5em;
@@ -77,7 +87,13 @@
     </style>
   </head>
   <body>
-    <h1>litepixel</h1>
+    <section id="title">
+      <h1>litepixel</h1>
+      <p>
+        Tiny pixel art editor for
+        <a href="https://litecanvas.js.org">litecanvas</a> games.
+      </p>
+    </section>
 
     <div id="palette"></div>
 
@@ -320,7 +336,7 @@
         )
       }
 
-      // Auto-save in local storage evert 2 seconds
+      // Auto-save in local storage
       setInterval(() => {
         if (dirty) {
           localStorage.setItem('width', W)
@@ -329,7 +345,51 @@
           localStorage.setItem('ps', ps)
           dirty = false
         }
-      }, 2000)
+      }, 500)
+
+      // service worker for offline support
+      window.isUpdateAvailable = new Promise(function (resolve) {
+        if ('serviceWorker' in navigator) {
+          // register service worker file
+          navigator.serviceWorker
+            .register('sw.js')
+            .then((reg) => {
+              reg.onupdatefound = () => {
+                const installingWorker = reg.installing
+                installingWorker.onstatechange = () => {
+                  switch (installingWorker.state) {
+                    case 'installed':
+                      if (navigator.serviceWorker.controller) {
+                        resolve(true)
+                      } else {
+                        resolve(false)
+                      }
+                      break
+                  }
+                }
+              }
+            })
+            .catch((err) => console.error('[SW ERROR]', err))
+
+          navigator.serviceWorker.ready.then((reg) => {
+            reg.active.postMessage({ type: 'GET_VERSION' })
+          })
+
+          navigator.serviceWorker.addEventListener('message', (event) => {
+            const type = event.data.type
+            if ('GET_VERSION' === type) {
+              console.log('litepixel version:', event.data.res)
+            }
+          })
+        }
+      })
+
+      window.isUpdateAvailable.then((isAvailable) => {
+        if (!isAvailable) return
+        alert(
+          'New Update available! Reload the webapp to see the latest changes.'
+        )
+      })
     </script>
   </body>
 </html>
