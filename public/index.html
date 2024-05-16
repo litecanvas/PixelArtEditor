@@ -119,7 +119,12 @@
       ></canvas>
       <button id="clearButton">clear</button>
       <button id="exportButton">export</button>
-      <textarea id="exported" rows="10" readonly></textarea>
+      <textarea
+        id="exported"
+        rows="10"
+        readonly
+        onclick="this.select()"
+      ></textarea>
       <button id="copy">copy</button>
     </section>
 
@@ -372,7 +377,10 @@
 
       // service worker for offline support
       window.isUpdateAvailable = new Promise(function (resolve) {
-        if ('serviceWorker' in navigator) {
+        if (
+          'serviceWorker' in navigator &&
+          !location.hostname.includes('127.0.0')
+        ) {
           // register service worker file
           navigator.serviceWorker
             .register('sw.js')
