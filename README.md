@@ -2,7 +2,7 @@
 
 Tiny pixel art editor for [litecanvas](https://litecanvas.js.org) games.
 
-Test now in https://litecanvas.js.org/pixel-art-editor/
+Moved to https://github.com/litecanvas/litecanvas.github.io/blob/main/public/tools/pixel-art-editor.html
 
 ## LICENSE
 
