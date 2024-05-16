@@ -77,6 +77,13 @@
         text-align: center;
       }
 
+      footer {
+        margin-top: 4rem;
+        font-style: italic;
+        color: #333;
+        font-size: 0.9em;
+      }
+
       @media only screen and (max-width: 48rem) {
         #width,
         #height,
@@ -99,10 +106,10 @@
 
     <section class="canvas-wrapper">
       <section id="canvas-options">
-        Canvas size: <input type="number" id="width" value="8" /> x
-        <input type="number" id="height" value="8" />
+        Canvas size: <input type="number" id="width" value="8" min="1" /> x
+        <input type="number" id="height" value="8" min="1" />
         &nbsp;&nbsp; Pixel size:
-        <input type="number" id="pixelSize" value="" />
+        <input type="number" id="pixelSize" value="" min="1" />
       </section>
       <canvas
         id="art"
@@ -115,6 +122,15 @@
       <textarea id="exported" rows="10" readonly></textarea>
       <button id="copy">copy</button>
     </section>
+
+    <footer>
+      <p>
+        Fork on GitHub:
+        <a href="https://github.com/litecanvas/pixel-art-editor"
+          >https://github.com/litecanvas/pixel-art-editor</a
+        >
+      </p>
+    </footer>
 
     <script>
       const ctx = art.getContext('2d')
@@ -346,6 +362,13 @@
           dirty = false
         }
       }, 500)
+
+      window.addEventListener('beforeunload', (evt) => {
+        if (dirty) {
+          evt.preventDefault()
+          evt.returnValue = true
+        }
+      })
 
       // service worker for offline support
       window.isUpdateAvailable = new Promise(function (resolve) {
