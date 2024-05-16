@@ -19,10 +19,52 @@
         margin: 0;
       }
 
-      #palette label span {
-        width: 32px;
-        height: 32px;
+      a {
+        color: #1971c2 !important;
+      }
+
+      textarea {
+        margin-top: 2rem;
+        margin-bottom: 0.5rem;
         display: block;
+        width: 100%;
+        max-width: 480px;
+      }
+
+      button {
+        padding: 0.5em 1em;
+        margin-right: 0.5em;
+      }
+
+      button:disabled {
+        cursor: not-allowed;
+      }
+
+      canvas,
+      input,
+      textarea,
+      button {
+        border-radius: 0;
+        border: 1px solid #868e96;
+      }
+
+      footer {
+        margin-top: 4rem;
+        font-style: italic;
+        color: #333;
+        line-height: 1.5;
+      }
+
+      .canvas-wrapper {
+        margin-top: 1rem;
+      }
+
+      #palette label {
+        color: #000;
+      }
+
+      #palette label[data-color='0'] {
+        color: #fff;
       }
 
       #palette label {
@@ -31,8 +73,18 @@
         border: 4px solid #ddd;
       }
 
+      #palette label span {
+        width: 32px;
+        height: 32px;
+        display: block;
+        text-align: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
       #palette label.selected {
-        border: 4px solid #349109;
+        border: 4px solid #37b24d;
       }
 
       #palette {
@@ -52,23 +104,6 @@
         margin-bottom: 0.5rem;
       }
 
-      textarea {
-        margin-top: 2rem;
-        margin-bottom: 0.5rem;
-        display: block;
-        width: 100%;
-        max-width: 480px;
-      }
-
-      button {
-        padding: 0.5em 1em;
-        margin-right: 0.5em;
-      }
-
-      .canvas-wrapper {
-        margin-top: 1rem;
-      }
-
       #width,
       #height,
       #pixelSize {
@@ -77,18 +112,39 @@
         text-align: center;
       }
 
-      footer {
-        margin-top: 4rem;
-        font-style: italic;
-        color: #333;
-        line-height: 1.5;
-      }
-
       @media only screen and (max-width: 48rem) {
         #width,
         #height,
         #pixelSize {
           width: 1.5rem;
+        }
+      }
+
+      @media (prefers-color-scheme: dark) {
+        body {
+          background: #000;
+          color: #fff;
+        }
+
+        footer {
+          color: #ccc;
+        }
+
+        input,
+        textarea {
+          color: #fff;
+          background-color: #343a40;
+        }
+
+        button:disabled {
+          color: #ccc;
+        }
+
+        input,
+        textarea,
+        button,
+        canvas {
+          border-color: #000;
         }
       }
     </style>
@@ -111,12 +167,7 @@
         &nbsp;&nbsp; Pixel size:
         <input type="number" id="pixelSize" value="" min="1" />
       </section>
-      <canvas
-        id="art"
-        width="80"
-        height="80"
-        style="border: 1px solid"
-      ></canvas>
+      <canvas id="art" width="80" height="80"></canvas>
       <button id="clearButton">clear</button>
       <button id="exportButton">export</button>
       <textarea
@@ -279,7 +330,7 @@
         let color = colors[i]
         const el = document.createElement('label')
         el.dataset.color = i
-        el.innerHTML = `<span style="background:${color}"></span>`
+        el.innerHTML = `<span style="background:${color}">${i}</span>`
         palette.appendChild(el)
         el.title = 'Select color #' + i
         if (i === 0) {
@@ -287,7 +338,7 @@
         } else if (i + 1 === colors.length) {
           const eraser = document.createElement('label')
           eraser.dataset.color = -1
-          eraser.innerHTML = `<span style="font-size: 26px;text-align: center;color: #000;">&times;</span>`
+          eraser.innerHTML = `<span style="background:#fff;font-size: 26px;color: #c92a2a;">&times;</span>`
           eraser.title = 'Select the pixel eraser'
           palette.appendChild(eraser)
         }
@@ -324,6 +375,7 @@
       }
 
       window.onkeypress = (evt) => {
+        if ('INPUT' === evt.target.tagName) return
         evt.preventDefault()
         const key = parseInt(evt.key, 10)
         const keys = [0, 1, 2, 3, 4, 5, 6, 7]
@@ -347,7 +399,7 @@
           output += "  '"
           for (let x = 0; x < W; x++) {
             let colorindex = pixels[x][y]
-            if (null == colorindex || -1 === colorindex) colorindex = ' '
+            if (null == colorindex || -1 === colorindex) colorindex = '.'
             output += colorindex
           }
           output += "',\n"
