@@ -81,7 +81,7 @@
         margin-top: 4rem;
         font-style: italic;
         color: #333;
-        font-size: 0.9em;
+        line-height: 1.5;
       }
 
       @media only screen and (max-width: 48rem) {
@@ -128,17 +128,9 @@
       <button id="copy">copy</button>
     </section>
 
-    <footer>
-      <p>
-        Fork on GitHub:
-        <a href="https://github.com/litecanvas/pixel-art-editor"
-          >https://github.com/litecanvas/pixel-art-editor</a
-        >
-      </p>
-    </footer>
-
     <script>
       const ctx = art.getContext('2d')
+      const $ = (selector) => document.querySelector(selector)
       const colors = [
         '#101820',
         '#736464',
@@ -151,7 +143,8 @@
       ]
 
       /** @type HTMLElement */
-      let currentColor = null,
+      let selected = null,
+        currentColor = 0,
         W,
         H,
         ps,
@@ -256,7 +249,7 @@
 
       function trace(evt) {
         let [pageX, pageY] = getPageXY(evt)
-        const colorindex = ~~currentColor.dataset.color
+        const colorindex = ~~currentColor
 
         x = ~~((pageX - art.offsetLeft) / ps)
         y = ~~((pageY - art.offsetTop) / ps)
@@ -288,13 +281,14 @@
         el.dataset.color = i
         el.innerHTML = `<span style="background:${color}"></span>`
         palette.appendChild(el)
+        el.title = 'Select color #' + i
         if (i === 0) {
-          currentColor = el
-          currentColor.classList.add('selected')
+          setCurrentColor(0, el)
         } else if (i + 1 === colors.length) {
           const eraser = document.createElement('label')
           eraser.dataset.color = -1
           eraser.innerHTML = `<span style="font-size: 26px;text-align: center;color: #000;">&times;</span>`
+          eraser.title = 'Select the pixel eraser'
           palette.appendChild(eraser)
         }
       }
@@ -309,10 +303,38 @@
           label = target
         }
         if (label) {
-          currentColor.classList.remove('selected')
-          currentColor = label
-          currentColor.classList.add('selected')
+          setCurrentColor(label.dataset.color, label)
         }
+      }
+
+      /**
+       * @param {number} colorindex
+       * @param {HTMLElement} [element]
+       */
+      function setCurrentColor(colorindex, element) {
+        currentColor = colorindex
+        if (selected) {
+          selected.classList.remove('selected')
+        }
+        if (element) {
+          selected = element
+          selected.classList.add('selected')
+        }
+        console.log(colorindex, element)
+      }
+
+      window.onkeypress = (evt) => {
+        evt.preventDefault()
+        const key = parseInt(evt.key, 10)
+        const keys = [0, 1, 2, 3, 4, 5, 6, 7]
+        if (key && keys.includes(key)) {
+          const el = $(`[data-color="${key}"]`)
+          setCurrentColor(key, el)
+        } else if ("'" === evt.key) {
+          const el = $(`[data-color="-1"]`)
+          setCurrentColor(-1, el)
+        }
+        console.log(evt)
       }
 
       // Export
@@ -422,5 +444,18 @@
         )
       })
     </script>
+
+    <footer>
+      <p>
+        Tip: Press keys <code>0</code> to <code>7</code> to select a color. By
+        pressing <code>'</code> (single quote) you select the eraser.
+        <br />
+        <br />
+        Fork on GitHub:
+        <a href="https://github.com/litecanvas/pixel-art-editor"
+          >https://github.com/litecanvas/pixel-art-editor</a
+        >
+      </p>
+    </footer>
   </body>
 </html>
