@@ -1,4 +1,4 @@
-const cacheName = 'luizbills.litecanvas-editor-v1'
+const cacheName = 'luizbills.litepixel'
 const version = '1.4.2'
 
 const precacheResources = [
