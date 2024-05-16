@@ -1,0 +1,20 @@
+{
+  "name": "litepixel",
+  "short_name": "litepixel",
+  "id": "litepixel",
+  "description": "litepixel is a lightweight pixel art editor with litecanvas support.",
+  "start_url": ".",
+  "background_color": "#101820",
+  "theme_color": "#00a0c8",
+  "display": "standalone",
+  "categories": ["games", "development", "utilities"],
+  "lang": "en",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "icons/icon.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ]
+}
